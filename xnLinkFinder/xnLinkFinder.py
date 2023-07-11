@@ -1477,7 +1477,7 @@ def getConfig():
 
         # Get the path of the config file. If --config argument is not passed, then it defaults to config.yml in the same directory as the run file
         if args.config is None:      
-            configPath = os.path.dirname(__file__)
+            configPath = os.path.join(os.path.expanduser("~"), ".config", "xnLinkFinder") if os.path.expanduser("~") == os.path.expanduser("~" + os.environ['USER']) else None
             if configPath == "":
                 configPath = "config.yml"
             else:
@@ -3503,9 +3503,11 @@ def checkMaxTimeLimit():
         runTime = datetime.now() - startDateTime
         if runTime.seconds / 60 > args.max_time_limit:
             stopProgram = StopProgram.MAX_TIME_LIMIT
-            
+
 # Run xnLinkFinder
-if __name__ == "__main__":
+def main():
+
+    global args, linksFound, linksVisited, paramsFound, contentTypesProcessed, totalRequests, skippedRequests, failedRequests, process, currentUAGroup
 
     # Tell Python to run the handler() function when SIGINT is received
     signal(SIGINT, handler)
@@ -3864,7 +3866,7 @@ if __name__ == "__main__":
                     write(colored("\nProcessing links in ","cyan")+colored("Waymore File ","yellow")+colored(wf + ":", "cyan"))
                     processEachInput(wf)
                 linksVisited = set()
-                    
+
             # Once all data has been found, process the output
             args.input = originalInput
             processOutput()
@@ -3928,3 +3930,8 @@ if __name__ == "__main__":
     except Exception as e:
         if vverbose():
             writerr(colored("ERROR main 1: " + str(e), "red"))
+
+
+if __name__ == "__main__":
+
+    main()
